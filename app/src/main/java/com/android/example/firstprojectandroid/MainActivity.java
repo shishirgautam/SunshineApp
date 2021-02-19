@@ -18,7 +18,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView mtextViewresult;
+    private TextView mtextViewresult,mtextViewname,mtextViewtem,mtextViewpopu;
     private ProgressBar loadingView;
     private RequestQueue mQueue;
 
@@ -27,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_images);
         mtextViewresult = findViewById(R.id.texturl);
+        mtextViewname = findViewById(R.id.textname);
+        mtextViewpopu = findViewById(R.id.textpopulation);
         loadingView = findViewById(R.id.loadingView);
         Button buttonclick = findViewById(R.id.btnclick);
 
@@ -50,7 +52,8 @@ public class MainActivity extends AppCompatActivity {
             WeatherAPIResult parsedResult = new Gson().fromJson(response, WeatherAPIResult.class);
 
             mtextViewresult.setText("City: " + parsedResult.getCity().country);
-           // mtextViewresult.setText("Tem" + parsedResult.getMessage().toString());
+            mtextViewname.setText("Name: " + parsedResult.getCity().name);
+            mtextViewpopu.setText("Population: " + parsedResult.getCity().population);
             Log.d("Code", response);
         },
                 error -> {

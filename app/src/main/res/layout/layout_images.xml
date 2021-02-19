@@ -8,8 +8,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        app:cornerRadius="20dp">
+        android:layout_margin="20dp">
 
 <RelativeLayout
     android:layout_width="match_parent"
@@ -17,20 +16,11 @@
 
             <ImageView
                 android:id="@+id/imgforecast"
-                android:layout_width="match_parent"
-                android:layout_height="500dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:cornerRadius="40dp"
                 android:background="@drawable/forecast"/>
 
-
-        <TextView
-            android:id="@+id/texturl"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
-            android:textSize="25dp"
-            android:gravity="center"
-            android:layout_centerVertical="true"/>
 
     <ProgressBar
         android:id="@+id/loadingView"
@@ -50,5 +40,29 @@
             android:text="Click" />
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/texturl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textSize="15dp"
+        android:gravity="center"/>
+    <TextView
+        android:id="@+id/textname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textSize="15dp"
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/textpopulation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/texturl"
+        android:layout_alignParentEnd="true"
+        android:textColor="@android:color/black"
+        android:textSize="15dp" />
 
 </LinearLayout>
