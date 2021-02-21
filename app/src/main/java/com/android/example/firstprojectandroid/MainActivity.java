@@ -19,11 +19,14 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView mtextViewresult, mtextViewname, tvTemp;
+    private TextView mtextViewresult, mtextViewname, tvTemp, tvTime;
     private ProgressBar loadingView;
     RecyclerView recyclerView;
 
@@ -39,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         mtextViewresult = findViewById(R.id.texturl);
         mtextViewname = findViewById(R.id.textname);
         tvTemp = findViewById(R.id.tvTemp);
+        tvTime = findViewById(R.id.tvtime);
         loadingView = findViewById(R.id.loadingView);
         recyclerView = findViewById(R.id.recyclerView);
 
@@ -62,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
             mtextViewresult.setText("City: " + parsedResult.getCity().country);
             mtextViewname.setText("Name: " + parsedResult.getCity().name);
             tvTemp.setText(parsedResult.getList().get(0).temp.getDay() + "°c");
+            tvTime.setText(displayDate(parsedResult.getList().get(0).dt));
 
             dataList.addAll(parsedResult.getList());///
             dataAdapter.notifyDataSetChanged();///
@@ -75,4 +80,15 @@ public class MainActivity extends AppCompatActivity {
         mQueue.add(request);
     }
 
+
+    private String displayDate(long dt) {
+        Calendar calendar = Calendar.getInstance();
+       calendar.setTimeInMillis(dt);
+        String month = calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault());
+
+       return  calendar.get(Calendar.DAY_OF_MONTH) + " " + month + ", " + calendar.get(Calendar.YEAR);
+    }
 }
+
+
+

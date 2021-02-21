@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.example.firstprojectandroid.R;
 import com.android.example.firstprojectandroid.model.Data;
 
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class DataAdapter extends RecyclerView.Adapter<DataAdapter.Temperture> {
     Context context;
@@ -33,9 +35,10 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.Temperture> {
     @Override
     public void onBindViewHolder(@NonNull Temperture holder, int position) {
         Data tempData = weatherAPIResults.get(position);
-        holder.tvTempp.setText(String.valueOf(tempData.temp.getDay()));
-        holder.tvCity.setText(String.valueOf(tempData.clouds));
-        holder.tvname.setText(String.valueOf(tempData.dt));
+        holder.tvdate.setText(dateConvert(tempData.dt));
+        holder.tvweather.setText(tempData.weather.get(0).getDescription());
+        holder.tvmax.setText(tempData.temp.getMax().byteValue() + "°c");
+        holder.tvmin.setText(tempData.temp.getMin().byteValue() + "°c");
     }
 
     @Override
@@ -44,14 +47,24 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.Temperture> {
     }
 
     public class Temperture extends RecyclerView.ViewHolder {
-        TextView tvname, tvTempp, tvCity;
+        TextView tvdate, tvweather, tvmax, tvmin;
 
         public Temperture(@NonNull View itemView) {
             super(itemView);
-            tvname = itemView.findViewById(R.id.textNamee);
-            tvCity = itemView.findViewById(R.id.textcity);
-            tvTempp = itemView.findViewById(R.id.tvTemperture);
+            tvdate = itemView.findViewById(R.id.tvDate);
+            tvweather = itemView.findViewById(R.id.tvWeather);
+            tvmax = itemView.findViewById(R.id.tvMax);
+            tvmin = itemView.findViewById(R.id.tvMin);
 
         }
+    }
+
+    private String dateConvert(long dateInMills) {
+        Calendar ourCal = Calendar.getInstance();
+        ourCal.setTimeInMillis(dateInMills);
+
+        String amPm = ourCal.getDisplayName(Calendar.AM_PM, Calendar.SHORT, Locale.getDefault());
+
+        return  ourCal.get(Calendar.HOUR) + ":" + ourCal.get(Calendar.MINUTE) + " " + amPm;
     }
 }
