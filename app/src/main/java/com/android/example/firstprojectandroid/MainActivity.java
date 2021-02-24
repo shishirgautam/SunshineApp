@@ -1,25 +1,18 @@
 package com.android.example.firstprojectandroid;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.example.firstprojectandroid.adapter.DataAdapter;
 import com.android.example.firstprojectandroid.model.Data;
-import com.android.example.firstprojectandroid.model.WeatherAPIResult;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -29,9 +22,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView mtextViewresult, mtextViewname, tvTemp, tvTime;
     private ProgressBar loadingView;
     RecyclerView recyclerView;
+    private PageViewModel pageViewModel;
 
 
-    private RequestQueue mQueue;
     private DataAdapter dataAdapter;
     private List<Data> dataList;
 
@@ -39,6 +32,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_images);
+
+        //inversion of control principle
+        pageViewModel = new ViewModelProvider(this,
+                new ViewModelProvider.AndroidViewModelFactory(getApplication())).get(PageViewModel.class);
+
         mtextViewresult = findViewById(R.id.texturl);
         mtextViewname = findViewById(R.id.textname);
         tvTemp = findViewById(R.id.tvTemp);
@@ -46,49 +44,40 @@ public class MainActivity extends AppCompatActivity {
         loadingView = findViewById(R.id.loadingView);
         recyclerView = findViewById(R.id.recyclerView);
 
-        mQueue = Volley.newRequestQueue(this);
         dataList = new ArrayList<>();
         dataAdapter = new DataAdapter(this, dataList);
         recyclerView.setAdapter(dataAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        loadingView.setVisibility(View.VISIBLE);
-        jsonFormat();
-    }
+        pageViewModel.getApiData().observe(this, weatherAPIResult -> {
+            if (weatherAPIResult == null) return;
 
-    private void jsonFormat() {
-        String url = "https://andfun-weather.udacity.com/weather";
+            mtextViewresult.setText("City: " + weatherAPIResult.getCity().country);
+            mtextViewname.setText("Name: " + weatherAPIResult.getCity().name);
+            tvTemp.setText(weatherAPIResult.getList().get(0).temp.getDay() + "°c");
+            tvTime.setText(displayDate(weatherAPIResult.getList().get(0).dt));
 
-        StringRequest request = new StringRequest(Request.Method.GET, url, response -> {
-            loadingView.setVisibility(View.GONE);
-            WeatherAPIResult parsedResult = new Gson().fromJson(response, WeatherAPIResult.class);
-
-            mtextViewresult.setText("City: " + parsedResult.getCity().country);
-            mtextViewname.setText("Name: " + parsedResult.getCity().name);
-            tvTemp.setText(parsedResult.getList().get(0).temp.getDay() + "°c");
-            tvTime.setText(displayDate(parsedResult.getList().get(0).dt));
-
-            dataList.addAll(parsedResult.getList());///
-            dataAdapter.notifyDataSetChanged();///
-
-            Log.d("Code", response);
-        }, error -> {
-            loadingView.setVisibility(View.GONE);
-            mtextViewresult.setText("That didn't work!");
+            dataList.addAll(weatherAPIResult.getList());
+            dataAdapter.notifyDataSetChanged();
         });
 
-        mQueue.add(request);
+        pageViewModel.isLoading().observe(this, loading -> {
+            if (loading == null) return;
+
+            if (loading) {
+                loadingView.setVisibility(View.VISIBLE);
+            } else {
+                loadingView.setVisibility(View.GONE);
+            }
+        });
     }
 
 
     private String displayDate(long dt) {
         Calendar calendar = Calendar.getInstance();
-       calendar.setTimeInMillis(dt);
+        calendar.setTimeInMillis(dt);
         String month = calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault());
 
-       return  calendar.get(Calendar.DAY_OF_MONTH) + " " + month + ", " + calendar.get(Calendar.YEAR);
+        return calendar.get(Calendar.DAY_OF_MONTH) + " " + month + ", " + calendar.get(Calendar.YEAR);
     }
 }
-
-
-
